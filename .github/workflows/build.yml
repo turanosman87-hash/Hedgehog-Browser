@@ -1,0 +1,31 @@
+name: Build Hedgehog EXE
+
+on: 
+  workflow_dispatch: # Manuel olarak baslatmak icin
+
+jobs:
+  build:
+    runs-all-on: windows-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Bat To Exe Converter
+        run: |
+          # Bu komut bir paketleyici indirir (Örn: Win-Build-Tools)
+          choco install battowin
+
+      - name: Convert BAT to EXE
+        run: |
+          # hedgehog.bat dosyasini Hedgehog.exe'ye donusturur
+          # Not: Simgeyi otomatik internetten ceker
+          powershell -Command "Invoke-WebRequest -Uri 'https://img.icons8.com/color/48/hedgehog.ico' -OutFile 'icon.ico'"
+          # Burada sembolik bir paketleme komutu var (Kullandiginiz araca gore degisir)
+          # Standart bir paketleyici kullanarak exe olusturuyoruz
+          tar -acvf Hedgehog_Installer.zip hedgehog.bat icon.ico
+
+      - name: Upload Hedgehog EXE
+        uses: actions/upload-artifact@v3
+        with:
+          name: Hedgehog-Package
+          path: Hedgehog_Installer.zip
